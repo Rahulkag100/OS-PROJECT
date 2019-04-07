@@ -32,3 +32,16 @@ for(i=0;i<n-1;i++)
      }
   }
 }
+int main()
+{
+
+int i,t=0,b_t=0,peak;
+
+int a[10];
+
+float wait_time = 0, taround_time = 0, avg_w_t=0, avg_taround_time=0;
+
+printf("enter the no. of processes: ");
+
+scanf("%d",&n);
+}
