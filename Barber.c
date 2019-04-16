@@ -23,6 +23,11 @@ pthread_mutex_t mutex;
 sem_t customers;
 
 sem_t barber;
+
+
+
+
+
 void *barberBob(void *threadid){
 
   int haircuts = NUM_THREADS-1;
@@ -53,3 +58,94 @@ void *barberBob(void *threadid){
 
 }
 
+
+
+void *customer(void *threadid)
+
+{
+
+
+
+  int haircuts = 1;
+
+  while(haircuts > 0){
+
+    pthread_mutex_lock(&mutex);
+
+    if(seats > 0){
+
+      seats--;
+
+      printf("taking a seat, waiting on barber\n");
+
+      sem_post(&customers);
+
+      haircuts--;
+
+  sleep(1);
+
+      pthread_mutex_unlock(&mutex);
+
+      sem_wait(&barber);
+
+      printf("getting a haircut %d \n", (int)threadid);
+
+    }
+
+    else{
+
+      pthread_mutex_unlock(&mutex);
+
+      printf("\n Customer Thread:%d couldn't get a haircut, seats = %d\n",(int)threadid, seats);
+
+      sleep(1);
+
+    }
+
+  }
+
+  pthread_exit(NULL);
+
+}
+
+
+
+int main()
+
+{
+
+ printf("Enter the number of seats");
+ scanf("%d",&seats);
+
+  sem_init(&customers,0,0);
+
+  sem_init(&barber,0,0);
+
+  int t;
+
+  for(t=0; t<NUM_THREADS; t++){
+
+    printf("Creating thread %d\n", t);
+
+    if(t == 0){
+
+      pthread_create(&threads[t], NULL, barberBob, (void *)t);
+
+    }
+
+    else{
+
+      pthread_create(&threads[t], NULL, customer, (void *)t);
+
+    }
+
+  }
+
+
+  for(t = 0; t < NUM_THREADS; t++)
+
+    pthread_join(threads[t],NULL);
+
+  pthread_exit(NULL);
+
+}
